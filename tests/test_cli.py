@@ -40,3 +40,13 @@ class CliTests(TestCase):
         self.assertEqual(result, 0)
         self.assertIn('"name": "MAYO CLINIC"', stdout.getvalue())
         mocked_fetch.assert_called_once()
+
+    @patch("npi_surface_check.cli.fetch_nppes", return_value=PAYLOAD)
+    def test_main_taxonomy(self, mocked_fetch):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            result = main(["--taxonomy-description", "Internal Medicine", "--state", "CA"])
+        self.assertEqual(result, 0)
+        called_query = mocked_fetch.call_args[0][0]
+        self.assertEqual(called_query.taxonomy_description, "Internal Medicine")
+        self.assertEqual(called_query.state, "CA")
