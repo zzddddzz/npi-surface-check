@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "npi-surface-check"
+version = "0.1.0"
+description = "Check what an NPI profile exposes in public NPPES data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [
+  { name = "Di Zhang" }
+]
+keywords = ["npi", "nppes", "healthcare", "public-data", "cli"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Healthcare Industry",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Utilities"
+]
+dependencies = [
+  "certifi>=2024.8.30"
+]
+
+[project.urls]
+Homepage = "https://github.com/zzddddzz/npi-surface-check"
+Issues = "https://github.com/zzddddzz/npi-surface-check/issues"
+
+[project.scripts]
+npi-surface-check = "npi_surface_check.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/npi_surface_check"]
