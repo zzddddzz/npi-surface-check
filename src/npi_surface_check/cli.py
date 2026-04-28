@@ -116,8 +116,8 @@ def print_human_report(report: dict[str, Any]) -> None:
         print(f"   Primary taxonomy: {record['primary_taxonomy']}")
         if record["addresses"]:
             print("   Public addresses:")
-            for address in record["addresses"]:
-                print(f"   - {address.get('purpose') or 'ADDRESS'}: {address['address']}")
+            for address in group_addresses(record["addresses"]):
+                print(f"   - {address['purpose']}: {address['address']}")
                 if address.get("telephone_number"):
                     print(f"     phone: {address['telephone_number']}")
         print("   Review notes:")
@@ -140,3 +140,21 @@ def print_csv_report(report: dict[str, Any]) -> None:
                 "review_note_count": len(record.get("findings") or []),
             }
         )
+
+
+def group_addresses(addresses: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    grouped: list[dict[str, Any]] = []
+    indexes: dict[tuple[str, str | None], int] = {}
+
+    for address in addresses:
+        key = (str(address.get("address") or ""), address.get("telephone_number"))
+        purpose = str(address.get("purpose") or "ADDRESS")
+        if key in indexes:
+            existing = grouped[indexes[key]]
+            existing["purpose"] = f"{existing['purpose']}, {purpose}"
+            continue
+
+        indexes[key] = len(grouped)
+        grouped.append({**address, "purpose": purpose})
+
+    return grouped

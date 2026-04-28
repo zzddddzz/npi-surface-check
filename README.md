@@ -77,6 +77,39 @@ CSV output:
 npi-surface-check --organization "Mayo Clinic" --limit 1 --csv
 ```
 
+## Examples
+
+Organization searches return public NPPES organization fields:
+
+```text
+$ npi-surface-check --organization "Mayo Clinic" --limit 1
+Results: 1
+
+1. MAYO CLINIC (1881018208)
+   Type: NPI-2  Status: A
+   Last updated: 2021-04-12
+   Primary taxonomy: Clinic/Center, Multi-Specialty (261QM1300X)
+   Public addresses:
+   - LOCATION, MAILING: 200 1ST ST SW, ROCHESTER MN 55905-0001, United States
+     phone: 507-284-2511
+```
+
+Individual-provider output has the same shape. This sample uses synthetic values:
+
+```text
+Results: 1
+
+1. ALEX R RIVERA PHARMD (0000000000)
+   Type: NPI-1  Status: A
+   Last updated: 2026-01-15
+   Primary taxonomy: Pharmacist (183500000X)
+   Public addresses:
+   - MAILING: 100 MAIN ST, ANYTOWN CA 90001-0000, United States
+     phone: 555-0100
+```
+
+Add `--json` for structured output or `--csv` for spreadsheet-friendly output.
+
 ## Safety Boundary
 
 - Uses public NPPES data only.

@@ -31,12 +31,24 @@ def format_address(address: dict[str, Any]) -> str:
         address.get("address_2"),
         " ".join(
             str(part)
-            for part in [address.get("city"), address.get("state"), address.get("postal_code")]
+            for part in [address.get("city"), address.get("state"), format_postal_code(address)]
             if part
         ),
         address.get("country_name"),
     ]
     return ", ".join(str(line) for line in lines if line)
+
+
+def format_postal_code(address: dict[str, Any]) -> str:
+    postal_code = str(address.get("postal_code") or "")
+    digits = "".join(character for character in postal_code if character.isdigit())
+    country_code = str(address.get("country_code") or "").upper()
+    country_name = str(address.get("country_name") or "").upper()
+    is_us_address = country_code in {"", "US"} and (not country_name or country_name == "UNITED STATES")
+
+    if is_us_address and len(digits) == 9:
+        return f"{digits[:5]}-{digits[5:]}"
+    return postal_code
 
 
 def primary_taxonomy(record: dict[str, Any]) -> str:

@@ -1,7 +1,7 @@
 from datetime import date
 from unittest import TestCase
 
-from npi_surface_check.surface import analyze_record, display_name, format_address, primary_taxonomy
+from npi_surface_check.surface import analyze_record, display_name, format_address, format_postal_code, primary_taxonomy
 
 
 INDIVIDUAL_RECORD = {
@@ -38,7 +38,19 @@ class SurfaceTests(TestCase):
     def test_format_address(self):
         self.assertEqual(
             format_address(INDIVIDUAL_RECORD["addresses"][0]),
-            "100 MAIN ST, ANYTOWN CA 900010000, United States",
+            "100 MAIN ST, ANYTOWN CA 90001-0000, United States",
+        )
+
+    def test_format_address_adds_zip4_hyphen_for_us_address(self):
+        self.assertEqual(
+            format_address({**INDIVIDUAL_RECORD["addresses"][0], "country_code": "US"}),
+            "100 MAIN ST, ANYTOWN CA 90001-0000, United States",
+        )
+
+    def test_format_postal_code_leaves_non_us_postal_code_alone(self):
+        self.assertEqual(
+            format_postal_code({"postal_code": "K1A0B1", "country_code": "CA", "country_name": "Canada"}),
+            "K1A0B1",
         )
 
     def test_primary_taxonomy(self):

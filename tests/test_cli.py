@@ -4,7 +4,7 @@ from contextlib import redirect_stdout
 from unittest import TestCase
 from unittest.mock import patch
 
-from npi_surface_check.cli import build_report, main
+from npi_surface_check.cli import build_report, group_addresses, main
 
 
 PAYLOAD = {
@@ -67,3 +67,22 @@ class CliTests(TestCase):
         self.assertEqual(called_query.taxonomy_description, "Internal Medicine")
         self.assertEqual(called_query.state, "CA")
         mocked_fetch.assert_called_once()
+
+    def test_group_addresses_keeps_purposes_for_duplicate_public_address(self):
+        addresses = [
+            {
+                "purpose": "LOCATION",
+                "address": "200 1ST ST SW, ROCHESTER MN 55905-0001, United States",
+                "telephone_number": "507-284-2511",
+            },
+            {
+                "purpose": "MAILING",
+                "address": "200 1ST ST SW, ROCHESTER MN 55905-0001, United States",
+                "telephone_number": "507-284-2511",
+            },
+        ]
+
+        grouped = group_addresses(addresses)
+
+        self.assertEqual(len(grouped), 1)
+        self.assertEqual(grouped[0]["purpose"], "LOCATION, MAILING")
