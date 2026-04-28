@@ -59,6 +59,12 @@ Search by organization:
 npi-surface-check --organization "Mayo Clinic" --limit 3
 ```
 
+Search by taxonomy description:
+
+```bash
+npi-surface-check --taxonomy-description "Internal Medicine" --state CA --limit 3
+```
+
 JSON output:
 
 ```bash

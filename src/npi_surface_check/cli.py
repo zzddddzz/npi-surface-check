@@ -33,10 +33,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         state=args.state,
         city=args.city,
         limit=args.limit,
+        taxonomy_description=args.taxonomy_description,
     )
 
-    if not any([query.number, query.last_name, query.organization_name]):
-        parser.error("provide --npi, --last-name, or --organization")
+    if not any([query.number, query.last_name, query.organization_name, query.taxonomy_description]):
+        parser.error("provide --npi, --last-name, --organization, or --taxonomy-description")
 
     try:
         payload = fetch_nppes(query)
@@ -66,6 +67,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--state", help="2-letter state filter")
     parser.add_argument("--city", help="city filter")
     parser.add_argument("--limit", type=int, default=5, help="maximum records to return")
+    parser.add_argument("--taxonomy-description", help="taxonomy description filter")
     output_group = parser.add_mutually_exclusive_group()
     output_group.add_argument("--json", action="store_true", help="emit machine-readable JSON")
     output_group.add_argument("--csv", action="store_true", help="emit spreadsheet-friendly CSV")

@@ -26,6 +26,7 @@ class NppesQuery:
     organization_name: str | None = None
     state: str | None = None
     city: str | None = None
+    taxonomy_description: str | None = None
     limit: int = 10
 
     def params(self) -> dict[str, str]:
@@ -37,6 +38,7 @@ class NppesQuery:
             "organization_name": self.organization_name,
             "state": self.state,
             "city": self.city,
+            "taxonomy_description": self.taxonomy_description,
         }
         params.update({key: value for key, value in optional.items() if value})
         return params
