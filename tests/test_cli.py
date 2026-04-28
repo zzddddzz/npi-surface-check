@@ -1,3 +1,4 @@
+import csv
 import io
 from contextlib import redirect_stdout
 from unittest import TestCase
@@ -39,4 +40,19 @@ class CliTests(TestCase):
             result = main(["--organization", "Mayo Clinic", "--json"])
         self.assertEqual(result, 0)
         self.assertIn('"name": "MAYO CLINIC"', stdout.getvalue())
+        mocked_fetch.assert_called_once()
+
+    @patch("npi_surface_check.cli.fetch_nppes", return_value=PAYLOAD)
+    def test_main_csv(self, mocked_fetch):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            result = main(["--organization", "Mayo Clinic", "--csv"])
+
+        self.assertEqual(result, 0)
+        rows = list(csv.DictReader(io.StringIO(stdout.getvalue())))
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["npi"], "1881018208")
+        self.assertEqual(rows[0]["name"], "MAYO CLINIC")
+        self.assertEqual(rows[0]["primary_taxonomy"], "Clinic/Center, Multi-Specialty (261QM1300X)")
+        self.assertEqual(rows[0]["review_note_count"], "2")
         mocked_fetch.assert_called_once()

@@ -1,12 +1,24 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import sys
 from typing import Any, Sequence
 
 from .nppes import NppesError, NppesQuery, fetch_nppes
 from .surface import analyze_record, display_name, format_address, primary_taxonomy
+
+
+CSV_FIELDS = [
+    "npi",
+    "name",
+    "enumeration_type",
+    "status",
+    "last_updated",
+    "primary_taxonomy",
+    "review_note_count",
+]
 
 
 def main(argv: Sequence[str] | None = None) -> int:
@@ -32,10 +44,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 2
 
+    report = build_report(payload)
     if args.json:
-        print(json.dumps(build_report(payload), indent=2, sort_keys=True))
+        print(json.dumps(report, indent=2, sort_keys=True))
+    elif args.csv:
+        print_csv_report(report)
     else:
-        print_human_report(build_report(payload))
+        print_human_report(report)
     return 0
 
 
@@ -51,7 +66,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--state", help="2-letter state filter")
     parser.add_argument("--city", help="city filter")
     parser.add_argument("--limit", type=int, default=5, help="maximum records to return")
-    parser.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    output_group = parser.add_mutually_exclusive_group()
+    output_group.add_argument("--json", action="store_true", help="emit machine-readable JSON")
+    output_group.add_argument("--csv", action="store_true", help="emit spreadsheet-friendly CSV")
     return parser
 
 
@@ -104,3 +121,20 @@ def print_human_report(report: dict[str, Any]) -> None:
         print("   Review notes:")
         for finding in record["findings"]:
             print(f"   - {finding['level'].upper()}: {finding['title']} - {finding['detail']}")
+
+
+def print_csv_report(report: dict[str, Any]) -> None:
+    writer = csv.DictWriter(sys.stdout, fieldnames=CSV_FIELDS)
+    writer.writeheader()
+    for record in report["records"]:
+        writer.writerow(
+            {
+                "npi": record.get("npi"),
+                "name": record.get("name"),
+                "enumeration_type": record.get("enumeration_type"),
+                "status": record.get("status"),
+                "last_updated": record.get("last_updated"),
+                "primary_taxonomy": record.get("primary_taxonomy"),
+                "review_note_count": len(record.get("findings") or []),
+            }
+        )

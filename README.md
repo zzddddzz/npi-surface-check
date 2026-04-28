@@ -65,6 +65,12 @@ JSON output:
 npi-surface-check --organization "Mayo Clinic" --limit 1 --json
 ```
 
+CSV output:
+
+```bash
+npi-surface-check --organization "Mayo Clinic" --limit 1 --csv
+```
+
 ## Safety Boundary
 
 - Uses public NPPES data only.
